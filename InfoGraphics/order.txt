@@ -1,0 +1,53 @@
+# -----------------------------------------------------------------------------
+# List All Infographics Used in this Training
+# -----------------------------------------------------------------------------
+# Note:
+# - Empty lines are ignored
+# - Comment as usual (start with # after first non-whitespace)
+# - Sections separated by colon-lines (currently no special meaning)
+# - Order mattters for generating combined PDF
+
+:::::::::::::::::::::::::::: Intro
+
+:::::::::::::::::::::::::::: Monday 1
+ParametrizedTypesAndSizes
+TemplateBasics
+
+:::::::::::::::::::::::::::: Monday 2 
+ExceptionBasics
+ExceptionDetails
+
+
+:::::::::::::::::::::::::::: Tuesday 1
+STL-SequenceContainers
+STL-AssociativeContainers
+STL-IteratorUsages
+
+:::::::::::::::::::::::::::: Tuesday 2
+CodeUnits_vs_CodePoints
+StringBasics
+RegularExpressions
+
+:::::::::::::::::::::::::::: Wednesday 1
+IOStreamBasics
+
+:::::::::::::::::::::::::::: Wednesday 2
+:::::::::::::::::::::::::::: Wednesday 3
+:::::::::::::::::::::::::::: Wednesday 4
+:::::::::::::::::::::::::::: Thursday 1
+:::::::::::::::::::::::::::: Thursday 2
+SmartPointers
+
+:::::::::::::::::::::::::::: Friday 1
+:::::::::::::::::::::::::::: Friday 2
+Example-OpenClosePrinciple
+
+# ReducingCodeBloat
+# GuidingPrinciples
+# ExecutionModel
+# ClassToMemoryMapping
+# ContainerImplementations
+# RuntimeTypeIdentification
+# TypeBasedBranching
+
+# 

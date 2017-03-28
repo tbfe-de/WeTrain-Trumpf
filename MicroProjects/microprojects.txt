@@ -1,0 +1,118 @@
+Step 1: Provide a "Block of Storage" for `int`-s
+
+* **not** be a templated in the element type (unlike both, `std::array` and `std::vector`,
+* a fixed size that will never change after creation (i.e. like `std::array`, unlike `std::vector`)
+* which can be set at run-time (like `std::vector`, unlike `std::array`)
+
+Besides allocation and deallocation, provide at least a `size()` operation and indexing for both,
+constant and non-constant `BlockOfInt`-s
+
+Step 1x: Add Testability of Constructor and Destructor
+
+Step 2: Make Usable when handed as const reference
+
+Step 2x: Provide Tests for Pointer and Const Pointer Access
+
+Step 3: Support a Possibility for "cheap" swapping
+
+Step 3x: Add Copy Constructor and Assignment
+
+Step 4: Support Move, Forbid Copy
+
+Step 4x: Consider Applicability of Boost.Nocopy
+
+Step 5: Add Construction from Initialiser List
+
+Step 5x: Add Assignment from Initialiser List
+
+Step 6: Add Constructor to initialise with all zeroes
+
+Step 6x: Consider Applicability of Boost.Value_initialized
+
+Step 7: Turn into Template `BlockOf<T>`
+
+Step 7x: Avoid Necessity for Default Constructor of T
+
+Step 8: Does "Perfect Forwarding" work for "BlockOf<T>"?
+
+Step 8x: Improve "Perfect Forwarding" for `BlockOf<T>`
+
+Step 9: Consider to make `BlockOf<T>` work with Range-`for`
+
+Step 9x: Make `BlockOf<T>` work with in more cases of Range-`for`
+
+Step 10: Implement `for_each` Member Function for `BlockOf<T>`
+
+Step 10x: Compare Generic Template Argument to `std::function`
+
+Step 11: Compare Lambdas to Functors
+
+Step 11x: Extend Comparison to Boost.Lambda
+
+Step 12: Add `at`-Member Function with Index-Checking
+
+Step 12x: Exploit Re-use possibilties for `at` and `operator[]`
+
+Step 13: Demonstrate Problem of Exceptions Thrown be Desctructor
+
+Step 13x: Provide a Member Function `nothrow_clear` for `BlockOf<T>`
+
+Step 14: Consider adding `noexcept` to Move-Constructor of `BlockOf<T>`
+
+Step 14x: Demonstrate Forwarding of noexcept by `BlockOf<T>`
+
+Step 15: When Throwing from `at`, indicate (bad) index and limit
+
+Step 15x: Apply Boost.Exception instead of special exception class
+
+Step 16: Consider replacing size() with an empty() member function.
+
+Step 16x: Propose an alternative design if empty `BlockOf<T>`s are frequent
+
+Step 17: Implement Comparison(s) for `BlockOf<T>`
+
+Step 17x: Implement Hash-Function for `BlockOf<T>`
+
+Step 18: Implement Iterators for `BlockOf<T>` as nested class using Boost.Iterator
+
+Step 18x: Design "Safe" Iterators for `BlockOf<T>`
+
+Step 19: Demonstrate Filling of `BlockOf<T>` with STL-Algorithms
+
+Step 19x: Provide Constructor with Iterator-Interface
+
+Step 20: Demonstrate Searching in BlockOf<T> with STL-Algorithms
+
+Step 20x: Demonstrate Copying and Element Removing Algorithms
+
+Step 21: Consider Usability of `BlockOf<T>` with Boost.Range
+
+Step 21x: Make `BlockOf<T>` Usable with Boost.Range
+
+Step 22: Calculate Total Length of Strings
+
+Step 22x: Transform Strings to Numbers
+
+Step 23: Count Strings Holding a Given Pattern
+
+Step 23x: Extract Pattern from Strings and Concatenate
+
+Step 24: Provide an output operator for `BlockOf<T>`
+
+Step 24x: Provide an input operator for `BlockOf<T>`
+
+Step 25: Fill a Container with Random Numbers using std::rand
+
+Step 25x: Demonstrate Unequal Distribution
+
+Step 26: Fill a Container with Evenly Distributed Numbers 1..1000
+
+Step 26x: Demonstrate Uncorrelated Bits of Generated 32 Bit Numbers
+
+Step 27: Concurrent Processing of `BlockOf<T>`
+
+Step 27x: Using `BlockOf<T>` as Fifo-Buffer between Threads
+
+Step 28: Re-Implement Move-Only `BlockOf<T>` with `std::unique_ptr`
+
+Step 28x: Redesign Inter-Thread Fifo-Buffer with Boost.ptr_container.
