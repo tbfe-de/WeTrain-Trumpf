@@ -119,38 +119,45 @@
 
 /* -------------------------------------------------------------------- BULK */
 body { /* Bulk */
-	font-family: 'Sans';
+	font-family: Sans, Helvetica;
 	font-size: 20px;
 	color: #2F4F4F;
 }
 
-p {
-	border-top: -0.5em;
+.I p,
+.N p,
+.F p,
+.W p,
+.pagefooter p {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.F p {
+	display: inline;
+}
+
+.F pre {
+	text-indent: 0;
 }
 
 /* ---------------------------------------------------------------- HEADINGS */
-h1, h2, h3 {
+.remark-slide-content h1, h2, h3 {
 	font-weight: 400;
-	margin-bottom: 0.5em;
+	margin-bottom: 0.8em;
 }
-h1 {
+.remark-slide-content h1 {
 	font-size: 2.5em;
 	text-align: center;
 }
-h2 {
+.remark-slide-content h2 {
 	font-size: 2em;
-	margin-bottom: 0.3em;
 }
-h3 {
-	font-size: 1.5em;
+.remark-slide-content h3 {
+	font-size: 1.3em;
 }
-h2 code.cpp.remark-code,
-h3 code.cpp.remark-code {
-	font-size: 90%;
-}
-h4 {
-	font-size: 1.2em;
-	margin-bottom: 0;
+.remark-slide-content h4 {
+	font-size: 1.0em;
 }
 
 /* ------------------------------------------------------------------- LINKS */
@@ -200,11 +207,8 @@ div.remark-slide-number {
 	padding-bottom: 4px;
 	font-size: 90%
 }
-div.remark-notes-area {
-	font-size: 12px
-}
-div.remark-slide-notes {
-	font-size: 12px
+div.remark-notes {
+	font-size: 70%
 }
 
 /*
@@ -218,9 +222,9 @@ div.remark-slide-notes {
 	text-align: center;
 }
 #slide-frontmatter .title {
-	padding-top: 1em;
-	padding-bottom: 0.3em;
-	font-size: 300%;
+	padding-top: 0.2em;
+	padding-bottom: 0.1em;
+	font-size: 350%;
 	color: #000099;
 	background: white;
 	border: solid 12px;
@@ -231,10 +235,9 @@ div.remark-slide-notes {
 	-moz-box-shadow: 10px 10px 5px #888;
 	-webkit-box-shadow: 10px 10px 5px #888;
 	box-shadow: 10px 10px 5px lightgray;
-	padding: 8px;
 	border: solid medium darkgrey;
-	padding: 0.7em;
-	font-size: 28px;
+	padding: 0.3em;
+	font-size: 20px;
 	color: #000099;
 	background: white;
 	line-height: 150%;
@@ -246,6 +249,10 @@ div.remark-slide-notes {
 #slide-frontmatter .client {
 	padding-top: 2em;
 	font-size: 15px;
+}
+#slide-frontmatter .copyright {
+	padding-top: 8em;
+	font-size: 14px;
 }
 
 /* ---- FOOTNOTE INDICATOR -------------------------- (for use in body text) */
@@ -259,13 +266,6 @@ div.remark-slide-notes {
 	content: "*";
 }
 
-/* ---- TABLE -------------------------------- add border lines around cells */
-table {
-    border-collapse: collapse;
-}
-table td, table th {
-        border: 2px solid blue;
-}
 /* ---- NOTICE ------------ make block standing a little bit over usual text */
 .N {
 	-moz-box-shadow: 10px 10px 5px #888;
@@ -319,7 +319,7 @@ table td, table th {
 	background: red;
 	color: white;
 }
-.W code.cpp.remark-code {
+.W code.remark-code {
 	color: black;
 }
 @media print { /* For a more uniform appperance */
@@ -393,26 +393,28 @@ table td, table th {
         	color: blue;
 	}
 }
-/* ---- GRAPHIC ------------------------------- small preview of Info-Grapic */
+/* ---- GRAPHIC ------------------------------ small preview of Info-Graphic */
 div.infographic {
 	float: right;
 	width: 60%;
 	-webkit-transform-origin-x: 0%;
 	-webkit-transform-origin-y: 0%;
 	-webkit-transform: scale(0.3);
+	transform-origin: 0% 0%;
+	transform: scale(0.3);
+}
+
+/* ---- GRAPHIC ---------------------------------- full view of Info-Graphic */
+div.infographic-full {
+	-webkit-transform-origin-x: 0%;
+	-webkit-transform-origin-y: 0%;
+	-webkit-transform: scale(0.47);
+	transform-origin: 0% 0%;
+	transform: scale(0.47);
 }
 
 /* ---- INFOLINK -------------------- special area to link to a info-graphic */
 div.infolink {
-	font-size: 0.5em;
-	color: gray;
-	position: absolute;
-	top: 2em;
-	right: 2em;
-}
-
-/* ---- DOCULINK --------------------- special area to link to documentation */
-div.refersto {
 	font-size: 0.5em;
 	color: gray;
 	position: absolute;
@@ -425,7 +427,7 @@ div.refersto {
         position: absolute;
         padding-top: 7px;
 	padding-left: 50px;
-        font-size: 7pt;
+        font-size: 8pt;
         color: white;
         background: #00CED1;
         text-align: left;
@@ -441,7 +443,7 @@ div.refersto {
 		display: block;
 		background: url("../PNG/logo-MW-12x12.png") no-repeat;
 		position: absolute;
-		bottom: -5.3em;
+		bottom: -4.7em;
 		left: -3px;
 		width: 36mm;
 		height: 24mm;
@@ -569,16 +571,10 @@ div.linkpage span.X {
 		-webkit-box-shadow: none;
 		box-shadow: none;
 	}
-	.remark-container.remark-presenter-mode .remark-slide-notes {
-		width: 708px;
-	}
-	@page {
-		size: 21cm 29.7cm;
-	}
 }
-
 @page {
-	margin: 0;
+	size: A4;
+	margin-left: 2cm;
 }
 
 /*

@@ -169,14 +169,14 @@ Topics._[] Monday to Friday (last day course ends after lunch-break)
 ------------------------------------------------------------------------------
 
 1. [C++11 Extensions (and some related Boost)	](#cpp11_extensions)
-1. [Exceptions (including Boost.Exception)	](#cpp_and_boost_exceptions)
-1. [STL Quick Tour (and again some of Boost)	](#stl_quick_tour_some_boost))
+1. [Exceptions (including Boost.Exception)	](#cpp11_and_boost_exceptions)
+1. [STL Quick Tour (and some more of Boost)	](#stl_quickly_and some_boost)
 1. [Strings (including Regular Expressions)	](#strings_and_regex)
-1. [I/O-Streams 				](#io_streams))
+1. [I/O-Streams (and even more of Boost))	](#std_iostreams_more_boost)
 1. [C++11 Random Numbers			](#random_numbers)
 1. [C++11 Durations and Time Points		](#cpp11_chrono))
-1. [C++11 Multi-Threading			](#cpp11_multithreading))
-1. [C++11 Tuple / Boost Optional, Variant, Any	](#cpp11_tuples_more_boost))
+1. [C++11 Multi-Threading			](#cpp11_multithreading)
+1. [C++11 Tuple / Boost Optional, Variant, Any	](#cpp11_tuples_more_boost)
 1. [C++11 Smart Pointers			](#cpp11_smart_pointers)
 1. [More (Parts of) Boost			](#more_of_boost)
 
@@ -503,7 +503,7 @@ different safety checks could be generated for pointers and references.
 ---
 template: plain
 name: reference_initialisation
-header: #### Initialisierung von Referenzen
+header: #### Initialising References
 
 By concept references always denote existing memory locations,._[] therefore
 they need to be initialised.
@@ -520,8 +520,9 @@ be modified themselves, though referenced memory can be read **and** written.
 int v1, v2;  // some variables ...
 int &r = v1; // reference is initialized
 ```
-Das folgende führt **nicht** zu einem Fehler bei der Kompilierung, es führt aber
-auch nicht dazu, dass `r` nun die Variable `v2` referenziert:
+
+The following is **not** a compile error, but it also does **not** cause `r`
+to reference `v2`:
 ```
 r = v2;  // copies current content of v2 to v1 (referenced by r)
 ```
@@ -2427,7 +2428,7 @@ the failure.
 
 ---
 template: plain
-name: stl_quick_tour_some_boost)
+name: stl_quickly_and_some_boost
 header: ## STL
 
 ---------------------------------------------------------------------------
@@ -4828,7 +4829,7 @@ std::regex telno{"(?:[(]((0[1-9]?(?: [0-9][0-9])*)[)] )?"
                   //   ^---------------------------^ +-- arg. list
 ```
 
-Then ``std::regex_match`` is called with an additional argument:
+Then `std::regex_match` is called with an additional argument:
 ```
 std::string input;
 while (std::getline(std::cin, input)) {
@@ -5023,16 +5024,16 @@ but nevertheless flexible mechanisms to "chop" a longer string into parts.
 
 ---
 template: plain
-name: wednesday1
+name: std_iostreams_more_boost
 header: ## I/O-Streams
 
 ---------------------------------------------------------------------------
 
 * [Basic Overview				](#iostream_basics)
-* [Overloading I/O-Operations			](#io_op_overloading)
+* [Using and Overloading I/O-Operations		](#io_op_use_and_overload)
 * [C-Style Formatting				](#boost_format)
-* [Serialising Object Networks			](#boost_serialisation)
 * [Extending the Back-End			](#boost_iostreams)
+* [Serialising Object Networks			](#boost_serialisation)
 
 ---------------------------------------------------------------------------
 
@@ -5190,25 +5191,27 @@ template: withinfo
 graphic: IOStreamBasics
 section: I/O-Stream State-Bits
 name: iostream_statebits
-header: #### Zustands-Bits der I/O-Streams
+header: #### I/O-Stream State Bits
 
-Jeder Stream besitzt eine Reihe von Zustandsbits.
+Each stream has a number of state bits.
 
-* Ist keines gesetzt ist, befindet sich der Stream im *good*-Zustand.
+* If all are clear, the stream is said to be in *GOOD*-state.
 
-* Bei im Rahmen der Eingabe eines bestimmten Daten-Typs *unerwarteten (also
-  nicht zu verarbeitenden)* Zeichen wird das `std::ios::failbit` gesetzt.
-
-* Tritt im Rahmen der Eingabe die *End-Of-File*-Bedingung ein, wird das
-  `std::ios::eofbit` gesetzt.
-
-* Bei anderen – vom Standard nicht näher spezifizierten – Fehlerbedingungen kann
-  auch das `std::ios::badbit` gesetzt werden.._[]
+* If during input of a given data type **before any valid character** an
+  * *unexpected* character occurs, the stream assumes the *FAIL* state by
+    setting `ios::std::failbit`;._[]
+  * there are *no more characters* to be read, the stream
+    * either assumes the *EOF* state by setting `ios::std::eofbit` (if there
+      are no more characters available);
+    * or assumes the *BAD* state by setting `ios::std::failbit` (if further
+      reading makes no sense because of some kind of hardware error);
+* otherwise (if some valid character(s) have already been extracted)
+  * further processing of characters will be stopped
+  * but the stream will stay in the *GOOD* state.
 
 .F[:
-The usual difference between setting the *fail*- or *bad*-bit is that in the
-latter case there is often no (portable) way to recover, while in the former any
-unexpected input causing the state-switch might simply be skipped.
+The unexpected character will stay available for later processing, but the
+state bits must first be reset by `clear()`.
 ]
 
 ---
@@ -5276,6 +5279,258 @@ catch (std::ios_base::failure &e) {
 }
 ```
 
+---
+template: plain
+name: io_op_use_and_overload
+header: ### Using and Overloading-I/O Operations
+
+The builtin "left shift" and "right shift" operators are conventionally
+overloaded for
+
+* reading "textual input" to be converted to some internal representation, and
+
+* converting some internal representation to "formatted output".
+
+.N[
+To emphasize the difference between the original meaning and its use for I/O,
+`operator<<` is also called [Stream Extraction](#io_stream_extraction) and
+respectively operator>>` [Stream Insertion](#io_stream_insertion).
+]
+
+---
+template: plain
+name: io_stream_extraction
+header: #### Stream Extraction
+
+The following pages concentrate on [Formatted Input](#input_extraction_rules)
+consumed with `operator>>`.
+
+.N[
+Note that there are other ways to "extract" input from a stream.
+]
+
+* For single characters:
+  * `int get()`
+     * character read or `EOF` received as return value
+  * `bool get(char &ch)`
+     * character read received via reference argument
+     * return indicates success of end-of-file
+* For character sequences:
+  * some variants of `read` (member function) and
+  * `getline` (member function / gobal function)
+
+.I[
+For more information see:
+http://en.cppreference.com/w/cpp/io/basic_istream/get
+http://en.cppreference.com/w/cpp/io/basic_istream/read
+http://en.cppreference.com/w/cpp/io/basic_istream/getline
+http://en.cppreference.com/w/cpp/string/basic_string/getline
+]
+
+---
+template: plain
+name: input_extraction_rules
+header: ##### Formatted Input Rules
+
+The general rule is:
+
+* As many characters in the input sequence are consumed
+  * as can be interpreted as textual representation of the type
+    to be read
+  * and the stream stays in *GOOD* state.
+* If there as not even one such character, the stream goes
+  * into *EOF* state if no more characters follow;
+  * into *FAIL* state if invalid characters follow.
+
+.I[
+For more information see:
+http://en.cppreference.com/w/cpp/concept/FormattedInputFunction
+]
+
+---
+template: plain
+name: formatted_input_example
+header: ##### Formatted Input Example
+
+The following extracs floating point values from standard input:
+
+.pull-left[
+```
+#include <iostream>
+int main() {
+    auto sum = 0.0;
+    auto count = 0L;
+    double value;
+    while (std::cin >> value) {
+        sum += value;
+        count += 1;
+    }
+    … // shown later
+}
+```
+Possible input:
+```
+50.0    25.5 25.
+   100 1e+2 -.5
+```
+]
+.pull-right[
+(For the part omitted at the end see
+[Formatted Output Example](#formatted_output_example).)
+
+The input may consist of an any number of floating point values separated by any
+amount and any kind of white space.
+
+Furthermore, as long as execution takes place in the **"C" Locale**, every
+number format is accepted that is also valid for a floating point literal in
+C++ source code.._[]
+
+Finally note that besides "End-Of-File" but also **any invalid input** will
+cause the while loop to end.
+]
+
+.F[:
+Though **not** including the usual suffixes `f`, `F`, `L`, and `l` (to choose
+`float` or `long double` over `double`.
+]
+
+---
+template: plain
+name: input_extraction_overloading
+header: ##### Input Extraction Overloading
+
+To extract `MyClass`-objects from a stream of `char`:._[]
+```
+std::istream&
+operator(std::istream& lhs, MyClass& rhs) {
+    …
+    … // whatever needs to be done
+    …
+    return lhs;
+}
+```
+
+**Using of a reference for the argument `rhs` is mandatory.**
+
+.I[
+For more information see:
+http://en.cppreference.com/w/cpp/io/basic_istream/operator_gtgt
+http://en.cppreference.com/w/cpp/io/basic_istream/operator_gtgt2
+]
+
+.F[:
+By using a template this can be generalized for streams based on any
+character-type.
+]
+
+---
+template: plain
+name: io_stream_insertion
+header: #### Stream Insertion
+
+The following pages concentrate on *formatted output* generated with `operator<<`.
+
+.N[
+Note that there are other ways to "insert" output into a stream.
+]
+
+* For single characters:
+  * `put` (member function)
+* For character sequences:
+  * `write` (member function)
+
+.I[
+For more information see:
+http://en.cppreference.com/w/cpp/io/basic_istream/put
+http://en.cppreference.com/w/cpp/io/basic_istream/write
+]
+
+---
+template: plain
+name: output_insertion_rules
+header: ##### Formatted Output Rules
+
+* As many characters in the input sequence are consumed
+  * as can be interpreted as textual representation of the type
+    to be read
+  * and the stream stays in *GOOD* state.
+* If there as not even one such character, the stream goes
+  * into *EOF* state if no more characters follow;
+  * into *FAIL* state if invalid characters follow.
+
+.I[
+For more information see:
+http://en.cppreference.com/w/cpp/concept/FormattedOutputFunction
+]
+
+---
+template: plain
+name: formatted_output_example
+header: ##### Formatted Output Example
+
+```
+#include <iostream>
+#include <iomanip>
+int main() {
+   … // shown earlier
+   std::cout.setf(std::ios::fixed);
+   std::cout.precission(4);
+   std::cout << "Average:"
+   std::cout << std::setw(10) << sum/count;
+   std::cout << std::endl;
+}
+
+```
+(For the part omitted at the begin see
+[Formatted Input Example](#formatted_input_example).)
+
+.pull-left[
+Possible output:
+```
+Average:   16.6667
+```
+]
+.pull-right[
+The numeric value will always have **fixpoint** format showing
+**4 decimal** places, right-justified in a **10 character wide** printing
+zone.._[] (If it does not fit within that width the printing zone will be
+automatically extended.)
+]
+
+.F[:
+Compared to C-style `printf` format strings this looks like a rather clumsy way
+of expressing that …
+]
+
+---
+template: plain
+name: output_insertion_overloading
+header: ##### Overloading "Stream Insertion"
+
+To insert `MyClass`-objects into a stream of `char`:._[]
+```
+std::ostream&
+operator<<(std::ostream& lhs, const MyClass& rhs) {
+    …
+    … // whatever needs to be done
+    …
+    return lhs;
+}
+```
+
+Using a value argument for `rhs` might give a small advantage if `MyClass`
+is tiny **and copyable**.
+]
+
+.I[
+For more information see:
+http://en.cppreference.com/w/cpp/io/basic_ostream/operator_ltlt
+]
+
+.F[:
+Of course, by using a template the above can be generalized to work on
+streams based on any character-type.
+]
 ---
 template: plain
 name: random_numbers
@@ -8521,7 +8776,9 @@ for could never become true!
 
 ---
 template: plain
-header: ##### Example for Unnamed Condition Variables (cont.)._[]
+header: ##### Example for Unnamed Condition Variables (cont.)
+
+Again taken from the Boost Documentation (with some editing._[]):
 
 ```
     //Sending side (can progress when space is available)
@@ -8549,9 +8806,8 @@ header: ##### Example for Unnamed Condition Variables (cont.)._[]
 
 .F[:
 Compared to the example code as shown in the Boost Documentation the names of
-the two condition variables are used switched, as in the opinion of the author
-this better reflects their purpose. Note that this is a **naming** issue only,
-the code in the original example was correct too.
+the two condition variables are used switched as it seams to better express
+their purpose.
 ]
 
 ---
@@ -8571,10 +8827,6 @@ template: plain
 name: message_queues
 header: #### Message Queues
 
----
-
-
-```
 
 </textarea>
 <!-- :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
