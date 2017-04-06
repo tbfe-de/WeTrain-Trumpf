@@ -8225,9 +8225,9 @@ synchronization mechanisms and offers a wide range of them:
 * [Shared Memory](#shared_memory)
 * [Memory-Mapped Files](#memory_mapped_files)
 * [Various Synchronization Mechanisms](#various_synchronization)
-* [File Locking](#file_locking)
-* [Relative Pointers](#relative_pointers)
 * [Message Queues](#message_queues)
+* [Relative Pointers](#relative_pointers)
+* [File Locking](#file_locking)
 ]
 
 ---
@@ -8235,7 +8235,7 @@ template: plain
 name: ipc_overview
 header: #### IPC Overview
 
-Boost.Interprocess works with both, [Threads or Processes]
+Boost.Interprocess works with both, [Threads or Processes].
 
 [Threads or Processes]: http://www.boost.org/doc/libs/release/doc/html/interprocess/some_basic_explanations.html#interprocess.some_basic_explanations.processes_and_threads
 
@@ -8320,8 +8320,8 @@ header: ##### Creating and Attaching Combined
 
 Creating and attaching to shared memory **`shm_obj`** can also be combined:
 ```
-boost::interprocess::shared_memory_object shm_obj
-   {open_or_create               //open or create
+boost::interprocess::shared_memory_object shm_obj{
+    open_or_create               //open or create
    ,"shared_memory"              //name
    ,read_only                    //read-only mode
    };
@@ -8812,8 +8812,154 @@ their purpose.
 
 ---
 template: plain
-name: file_locking
-header: #### File Locking
+name: message_queues
+header: #### Message Queues
+
+[Message Queues]: http://www.boost.org/doc/libs/release/doc/html/interprocess/synchronization_mechanisms.html#interprocess.synchronization_mechanisms.message_queue
+
+Message Queues provide two mechanisms in a single abstraction:
+
+.pull-left[
+**Transfer** i.e. the capability for
+
+* some Data Source – the **Producer**
+  * to hand over a Piece of Information to
+* some Data Sink – the **Consumer**
+
+.N.center[
+Note that **data is copied**  
+when transferred.._[]
+]
+]
+.pull-right[
+**Synchronisation** i.e.
+
+* have the Consumer **wait**
+  * until the Producer sends something
+
+Or for a bounded buffer
+
+* have the Producer **wait**
+  * until the Consumer has (somewhat) caught up.
+]
+
+
+.F[:
+While this is usually no issue for simple data values, objects refering to each
+other via pointers valid only inthe same virtual address space need special
+attention. [Relative Pointers](#relative_pointers) (as covered later) combined
+with [Shared Memory](#shared_memory) (as already covered) may help to solve
+this … though sometimes at the price of different challenges.
+]
+
+---
+template: plain
+name: message_queue_variations
+header: ##### Variations of Message Queues
+
+The datailed behaviour of a message queue can be selected from
+
+* when **Sending** or **Receiving** whether the operation
+  * may block until it can be carried out,
+  * will wait for a defined span of time
+  * will fail immediately._[]
+
+* and (as part of the message itself) whether the
+  * receiving is strictly "first-in, first-out", or
+  * according to dome prioritizing scheme.
+
+.F[:
+Technically the first and third option are border cases of a general time-out
+(= wait unlimited or not at all)
+]
+
+---
+template: plain
+name: message_queue_sending
+header: ##### Example Usage (create / attach)
+
+To work with a message queue, a program first must create or attach to it:
+```
+message_queue boost::interprocess::message_queue mq_obj{
+   open_or_create      //open or create, alternatively
+   // open_only          do not create if non-existant
+   // create_only        do not create if already exists
+   ,MSGQ_NAME          //name
+   ,MSG_NUM            //max message number
+   ,MSG_SIZE           //max message size
+   };
+```
+
+.N[
+This much similar to other IPC mechanisms (like shared memory etc.).
+]
+
+A message queue is kept alive as long as the system runs – **including any messages
+*sent* but not yet *received***. Its resources – and unread messages – may be
+explicitely released with a static member function:
+```
+boost::interprocess::message::remove(MSGQ_NAME);
+```
+
+.F[:
+The above assumes the identifiers *`MSGQ_NAME`*, *`MSG_NUM`*, and *`MSG_SIZE`*
+exist and have reasonable values.
+]
+
+---
+template: plain
+name: message_queue_sending
+header: ##### Example Usage (sending side)
+
+Assuming a valid message queue instance `mq_obj` (e.g. as defined on the
+previous page), the following would send a text message:._[]
+```
+void send_greet(const std::string& text) {
+    const auto s_size = std::min(text.length(), MSG_SIZE);
+    msq_obj.send(text, s_size, 0);
+}
+```
+
+.N[
+Note that it is an errors (returned via exception) when more data is sent as
+allowed by the maximum message length (set when the message queue was created).
+]
+
+With the above code, a greet message may or may not be truncated:
+```
+send_greet("hello, world");  // complete if MSG_SIZE >= 12 (but
+                             // e.g. with MSG_SIZE = 8 only the
+                             // initial "hello, w" will be send)
+```
+
+.F[:
+For robustness it may be advisable to add more error handling.
+]
+
+---
+template: plain
+name: message_queue_receiving
+header: ##### Example Usage (receiving side)
+
+When receiving from a message queue, the size
+
+* may be shorter
+* **but not longer**
+
+as the maximum message length (set when the queue was created):
+```
+std::string get_greet() {
+    char greet[MSG_SIZE];
+    int priority = 0;
+    const auto r_size = mq_obj.receive(greet, MSG_SIZE, priority);
+    return std::string{greet, r_size};
+}
+```
+
+.N[
+Note that care is taken above to create a valid `std::string` from a plain
+character buffer which is not expected to be '\0'-terminated.
+]
 
 ---
 template: plain
@@ -8824,8 +8970,8 @@ http://www.boost.org/doc/libs/1_63_0/doc/html/interprocess/offset_ptr.html
 
 ---
 template: plain
-name: message_queues
-header: #### Message Queues
+name: file_locking
+header: #### File Locking
 
 
 </textarea>
