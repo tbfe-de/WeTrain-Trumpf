@@ -8379,7 +8379,7 @@ named `"shared memory"`.._[]
 .N.center[
 [
 Click here for fleshed-out example code from the Boost Documentation.
-](http://www.boost.org/doc/libs/1_63_0/doc/html/interprocess/sharedmemorybetweenprocesses.html#interprocess.sharedmemorybetweenprocesses.sharedmemory.shared_memory_a_simple_example)
+](http://www.boost.org/doc/libs/release/doc/html/interprocess/sharedmemorybetweenprocesses.html#interprocess.sharedmemorybetweenprocesses.sharedmemory.shared_memory_a_simple_example)
 ]
 
 .F[:
@@ -8409,7 +8409,7 @@ indentified, also anonymous shared memory is supported:._[]
 .N.center[
 [
 Click here for fleshed-out example code from the Boost Documentation.
-](http://www.boost.org/doc/libs/1_63_0/doc/html/interprocess/sharedmemorybetweenprocesses.html#interprocess.sharedmemorybetweenprocesses.sharedmemory.anonymous_shared_memory)
+](http://www.boost.org/doc/libs/release/doc/html/interprocess/sharedmemorybetweenprocesses.html#interprocess.sharedmemorybetweenprocesses.sharedmemory.anonymous_shared_memory)
 ]
 
 .F[:
@@ -8419,21 +8419,100 @@ is responsible to prepare the shared memory for its offspring.
 ]
 
 ---
+template: plain
+header: ##### Managing Raw Fragments of Shared Memory
+
+[Memory Management Schemes]: http://www.boost.org/doc/libs/release/doc/html/interprocess/managed_memory_segments.html
+
+There are some typical usages of shared memory that require specific data
+structures controlling partial allocation and deallocation to be set up,
+operated on, with the option to synchronize concurrent access
+
+Several [Memory Management Schemes] are available for this purpose.
+
+At the lowest level, using 
+
+* `boost::interprocess::`**`managed_`**`shared_memory`
+* (instead of plain `boost::interprocess::shared_memory`)
+
+are added member functions to allocate and deallocate fragments.
+
+These are 
+
+* equivalents to raw ("C-Style" `malloc` / `free`) memory allocation,
+* but for obtaining storage **inside** a shared memory region,
+* (instead of the process specific heap).
+
+.N.center[
+[
+Click here for some example code from the Boost Documentation.
+](http://www.boost.org/doc/libs/1_63_0/doc/html/interprocess/managed_memory_segments.html#interprocess.managed_memory_segments.managed_memory_segment_features.allocate_deallocate)
+]
+
+---
+template: plain
+header: ##### Shared Memory Handles and Named Objects
+
+The general problem with shared memory is that it may be mapped at different
+addresses in different processes.
+
+Therefore
+
+* shared memory related pointers  
+  (or rather their "bit-patterns", valid only in one process)
+
+* may be converted to universal handles  
+  (still bit-patterns, but valid across processes)
+
+* and vice-versa, universal handles (back) to pointers.
+
+.N.center[
+[
+Click here for some example codes from the Boost Documentation.
+](http://www.boost.org/doc/libs/cwrelease1_63_0/doc/html/interprocess/managed_memory_segments.html#interprocess.managed_memory_segments.managed_memory_segment_features.allocation_types)
+]
+
+---
+template: plain
+header: ##### Objects in Shared Memory
+
+[Whole Object Construction]: http://www.boost.org/doc/libs/release/doc/html/interprocess/managed_memory_segments.html#interprocess.managed_memory_segments.managed_memory_segment_features.allocation_types
+
+Another set of member functions works at a slightly higher level, allowing
+
+* [Whole Object Construction] (and Destruction),
+
+and a facility
+
+* to **name** objects character string,
+
+* by which – later on or in a different process – they can be looked-up,
+
+* (even if the shared memory is mapped to different addresses).
+
+.N.center[
+[
+Click here for some example codes from the Boost Documentation.
+](http://www.boost.org/doc/libs/release/doc/html/interprocess/managed_memory_segments.html#interprocess.managed_memory_segments.managed_memory_segment_features.allocation_types)
+]
+
+---
 name: memory_mapped_files
 header: ##### OS-specific Variants of Shared Memory
 
 Depending on the OS two other forms of shared memory may be supported:
 
-* [Native Windows Shared Memory](http://www.boost.org/doc/libs/1_63_0/doc/html/interprocess/sharedmemorybetweenprocesses.html#interprocess.sharedmemorybetweenprocesses.sharedmemory.windows_shared_memory)
+* [Native Windows Shared Memory](http://www.boost.org/doc/libs/release/doc/html/interprocess/sharedmemorybetweenprocesses.html#interprocess.sharedmemorybetweenprocesses.sharedmemory.windows_shared_memory)
    or
-* [Unix System V Shared memory](http://www.boost.org/doc/libs/1_63_0/doc/html/interprocess/sharedmemorybetweenprocesses.html#interprocess.sharedmemorybetweenprocesses.sharedmemory.xsi_shared_memory)
+
+* [Unix System V Shared memory](http://www.boost.org/doc/libs/release/doc/html/interprocess/sharedmemorybetweenprocesses.html#interprocess.sharedmemorybetweenprocesses.sharedmemory.xsi_shared_memory)
 
 ---
 template: plain
 name: memory_mapped_files
 header: #### Memory-Mapped Files
 
-[Boost Documentation]: http://www.boost.org/doc/libs/1_63_0/doc/html/interprocess/sharedmemorybetweenprocesses.html#interprocess.sharedmemorybetweenprocesses.mapped_file
+[Boost Documentation]: http://www.boost.org/doc/libs/release/doc/html/interprocess/sharedmemorybetweenprocesses.html#interprocess.sharedmemorybetweenprocesses.mapped_file
 
 Memory mapped files are much like shared memory as described before, with the
 content being also present and accessible in the file system.
@@ -8453,7 +8532,7 @@ The [Boost Documentation] list the following advantages:
 .N.center[
 [
 Click here for fleshed-out example code from the Boost Documentation.
-](http://www.boost.org/doc/libs/1_63_0/doc/html/interprocess/sharedmemorybetweenprocesses.html#interprocess.sharedmemorybetweenprocesses.mapped_file.mapped_file_a_simple_example)
+](http://www.boost.org/doc/libs/release/doc/html/interprocess/sharedmemorybetweenprocesses.html#interprocess.sharedmemorybetweenprocesses.mapped_file.mapped_file_a_simple_example)
 ]
 
 ---
@@ -8564,7 +8643,7 @@ struct shared_memory_buffer {
 .N.center[
 [
 Click here for fleshed-out example code from the Boost Documentation.
-](http://www.boost.org/doc/libs/1_63_0/doc/html/interprocess/synchronization_mechanisms.html#interprocess.synchronization_mechanisms.semaphores.semaphores_anonymous_example)
+](http://www.boost.org/doc/libs/release/doc/html/interprocess/synchronization_mechanisms.html#interprocess.synchronization_mechanisms.semaphores.semaphores_anonymous_example)
 ]
 
 .F[:
@@ -8628,7 +8707,7 @@ struct shared_memory_log {
 .N.center[
 [
 Click here for fleshed-out example code from the Boost Documentation.
-](http://www.boost.org/doc/libs/1_63_0/doc/html/interprocess/synchronization_mechanisms.html#interprocess.synchronization_mechanisms.mutexes.mutexes_anonymous_example)
+](http://www.boost.org/doc/libs/release/doc/html/interprocess/synchronization_mechanisms.html#interprocess.synchronization_mechanisms.mutexes.mutexes_anonymous_example)
 ]
 
 .F[:
@@ -8686,7 +8765,7 @@ control flow leaves the code block guarded that way.
 .N.center[
 [
 Click here for fleshed-out example code from the Boost Documentation.
-](http://www.boost.org/doc/libs/1_63_0/doc/html/interprocess/synchronization_mechanisms.html#interprocess.synchronization_mechanisms.mutexes.mutexes_scoped_lock)
+](http://www.boost.org/doc/libs/release/doc/html/interprocess/synchronization_mechanisms.html#interprocess.synchronization_mechanisms.mutexes.mutexes_scoped_lock)
 ]
 
 ---
@@ -8737,7 +8816,7 @@ struct trace_queue {
 .N.center[
 [
 Click here for fleshed-out example code from the Boost Documentation.
-](http://www.boost.org/doc/libs/1_63_0/doc/html/interprocess/synchronization_mechanisms.html#interprocess.synchronization_mechanisms.mutexes.mutexes_anonymous_example)
+](http://www.boost.org/doc/libs/release/doc/html/interprocess/synchronization_mechanisms.html#interprocess.synchronization_mechanisms.mutexes.mutexes_anonymous_example)
 ]
 
 .F[:
@@ -8876,7 +8955,7 @@ Technically the first and third option are border cases of a general time-out
 ---
 template: plain
 name: message_queue_sending
-header: ##### Example Usage (create / attach)
+header: ##### Message Queue Example (create / attach)
 
 To work with a message queue, a program first must create or attach to it:
 ```
@@ -8909,7 +8988,7 @@ exist and have reasonable values.
 ---
 template: plain
 name: message_queue_sending
-header: ##### Example Usage (sending side)
+header: ##### Message Queue Example (send)
 
 Assuming a valid message queue instance `mq_obj` (e.g. as defined on the
 previous page), the following would send a text message:._[]
@@ -8921,32 +9000,33 @@ void send_greet(const std::string& text) {
 ```
 
 .N[
-Note that it is an errors (returned via exception) when more data is sent as
-allowed by the maximum message length (set when the message queue was created).
+Note that it is an errors (return via exception) when more data bytes are sent
+as specified for the message length when the message queue was created.
 ]
 
-With the above code, a greet message may or may not be truncated:
+In the above example, care is taken not to exceed the limit. Instead, a message
+may be sent truncated:
 ```
-send_greet("hello, world");  // complete if MSG_SIZE >= 12 (but
-                             // e.g. with MSG_SIZE = 8 only the
-                             // initial "hello, w" will be send)
+send_greet("hello, world");  // complete if MSG_SIZE >= 12 but
+                             // e.g. only the initial "hello, w"
+                             // will be sent for MSG_SIZE = 8
 ```
 
 .F[:
-For robustness it may be advisable to add more error handling.
+For robustness it may be advisable to add some more error handling.
 ]
 
 ---
 template: plain
 name: message_queue_receiving
-header: ##### Example Usage (receiving side)
+header: ##### Example Usage (receive)
 
 When receiving from a message queue, the size
 
 * may be shorter
 * **but not longer**
 
-as the maximum message length (set when the queue was created):
+as the maximum message length, as set when the queue was created:
 ```
 std::string get_greet() {
     char greet[MSG_SIZE];
@@ -8956,23 +9036,134 @@ std::string get_greet() {
 }
 ```
 
-.N[
-Note that care is taken above to create a valid `std::string` from a plain
-character buffer which is not expected to be '\0'-terminated.
+Care is taken to create a valid `std::string` from a plain character buffer.._[]
+
+.F[:
+Note that the below code (obviously aiming to avoid copying)
+**techically has undefined behaviour**.
+```
+std::string get_greet() {
+    std::string greet(MSG_SIZE);
+    int priority = 0;
+    auto r_size = mq_obj.receive(const_cast<char*>(greet.data()), MSG_SIZE, priority);
+    greet.resize(r_size);
+    return std::move(greet);
+}
+```
 ]
+
 
 ---
 template: plain
 name: relative_pointers
 header: #### Relative Pointers
 
-http://www.boost.org/doc/libs/1_63_0/doc/html/interprocess/offset_ptr.html
+[Relative Pointers]: http://www.boost.org/doc/libs/release/doc/html/interprocess/offset_ptr.html
+
+If objects in shared memory reference each other, the following is crucial to
+understand:
+
+.N[
+Their virtual addresses – as stored in usual pointers – are not valid accross
+processes.
+]
+
+The reason is that
+
+* the same region (of shared menory)
+* may be mapped to different base address._[]
+
+[Relative Pointers] provide a solution at the expense of some adress arithmetic
+at run-time.
+
+.N[
+Note that the solution is limited to one and the same stretch of shared memory
+**inside which both must live**, the pointer **and** the pointee.
+]
+
+.F[:
+For 64-bit hardware, due to its large adress range and the option to specifiy
+the desired address when existing shared memory is attached, the problem ist
+much relieved, though not reliably avoided.
+]
 
 ---
 template: plain
 name: file_locking
 header: #### File Locking
 
+[File Locking]: http://www.boost.org/doc/libs/release/doc/html/interprocess/synchronization_mechanisms.html#interprocess.synchronization_mechanisms.file_lock
+
+[File Locking] is provided in an advisory style, i.e.
+
+* any file access **without** prior locking
+* **will definetely be granted**.
+
+Therefore file locks may just be viewed as a file system specific mutex mechanism.
+
+Similar to mutexes there is an exclusiv and a shared version._[]
+
+Furthermore "timed" and "try" versions and also RAII-style lock wrappers are
+available.
+
+.F[:
+That way supporting so called "multiple reader / single writer" locking.
+]
+
+---
+template: plain
+name: file_locking
+header: ##### File Locking Example (Mutiple Readers)
+
+Using a sharable RAII-style lock to avoid a readers interfere with a writer:
+```
+boost::interprocess::file_lock my_file_lock{"my_file"};
+{
+   boost::interprocess::sharable_lock<
+       boost::interprocess::file_lock
+    > raii_wrapper{my_file_lock};
+   // given no writer has an exclusive lock, ANY NUMBER of
+   // readers may proceed; otherwise this (presumed) reader
+   // is blocked in the c'tor until the above condition holds.
+   …
+   … // safely READ the file (maybe together with others)
+   …
+} // (exiting from block automatically unlocks via d'tor)
+```
+
+.N.center[
+[
+Click here for fleshed-out example code from the Boost Documentation.
+](http://www.boost.org/doc/libs/release/doc/html/interprocess/synchronization_mechanisms.html#interprocess.synchronization_mechanisms.file_lock.file_lock_scoped_locks)
+]
+
+---
+template: plain
+name: file_locking
+header: ##### File Locking Example (Single Writer)
+
+Using an exclusive (non-sharable) RAII-style lock to avoid a writer interfers
+with any reader or other writer:
+```
+boost::interprocess::file_lock my_file_lock{"my_file"};
+{
+   boost::interprocess::scoped_lock<
+       boost::interprocess::file_lock
+    > raii_wrapper{my_file_lock};
+    // given no reader AND no other writer has a lock, ONE
+    // SINGLE writer may proceed; otherwise this writer is
+    // blocked in the c'tor until the above condition holds.
+    …
+    … // safely MODIFY the file (exclusive access guaranteed)
+    …
+} // (exiting the block automatically unlocks via d'tor)
+```
+
+.N.center[
+[
+Click here for fleshed-out example code from the Boost Documentation.
+](http://www.boost.org/doc/libs/release/doc/html/interprocess/synchronization_mechanisms.html#interprocess.synchronization_mechanisms.file_lock.file_lock_scoped_locks)
+]
 
 </textarea>
 <!-- :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
