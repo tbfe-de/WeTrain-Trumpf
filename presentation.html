@@ -170,15 +170,17 @@ Topics._[] Monday to Friday (last day course ends after lunch-break)
 
 1. [C++11 Extensions (and some related Boost)	](#cpp11_extensions)
 1. [Exceptions (including Boost.Exception)	](#cpp11_and_boost_exceptions)
-1. [STL Quick Tour (and some more of Boost)	](#stl_quickly_and some_boost)
+1. [STL Quick Tour (and some more of Boost)	](#stl_quickly_and_some_boost)
 1. [Strings (including Regular Expressions)	](#strings_and_regex)
-1. [I/O-Streams (and even more of Boost))	](#std_iostreams_more_boost)
+1. [I/O-Streams (and even more of Boost)	](#std_iostreams_more_boost)
 1. [C++11 Random Numbers			](#random_numbers)
-1. [C++11 Durations and Time Points		](#cpp11_chrono))
+1. [C++11 Durations and Clocks			](#cpp11_durations_and_clocks)
 1. [C++11 Multi-Threading			](#cpp11_multithreading)
 1. [C++11 Tuple / Boost Optional, Variant, Any	](#cpp11_tuples_more_boost)
 1. [C++11 Smart Pointers			](#cpp11_smart_pointers)
 1. [More (Parts of) Boost			](#more_of_boost)
+
+------------------------------------------------------------------------------
 
 ---
 
@@ -287,7 +289,7 @@ this training or later via download.
 
 #### DIY Printouts
 
-  [Chrome Browser]: https://www.google.de/chrome/browser/desktop/
+[Chrome Browser]: https://www.google.de/chrome/browser/desktop/
 
 Also, with Google's [Chrome Browser] you can create a PDF any time:
 
@@ -615,7 +617,7 @@ As reference initialisation occurs when handing arguments to functions, all the
 peculiarities and special cases discussed so far will be mostly likely observed
 there.
 
-A typical lapse is to forget to add `const` to read-only reference arguments:
+A typical lapse is to not add `const` to read-only reference arguments:
 ```
 void foo(double &arg) {
     …
@@ -667,9 +669,10 @@ References may be viewed in two ways:
 * **Or** an alias name for an existing memory location with a matching type.
 
 .N[
-Taking inot account the invisibly applied operations to references, then there
+Taking into account the invisibly applied operations to references, there
 are usually the same machine instructions generated for references as are for
-pointers – the difference is in the syntax for initialisation and access.._[]
+pointers – the actual difference is in the syntax for initialisation
+and access and the life-time of bound temporaries.._[]
 ]
 
 .F[:
@@ -681,7 +684,7 @@ file with suffix "`.s`" (lower case).
 ---
 template: plain
 name: rvalue_reference
-header: ### Rvalue Referenes
+header: ### Rvalue References
 
 [Rvalue References]: http://en.cppreference.com/w/cpp/language/reference
 
@@ -798,7 +801,7 @@ public:
     …
     MyClass(MyClass &&);        // C++11 move constructor and ...
     const MyClass& operator=(MyClass &&);      // move assignment
-}
+};
 ```
 
 By supplying both of move and copy support, or only the one or the other, or
@@ -1072,7 +1075,7 @@ When instantiating a (class or function) template concrete constants need to be
 named at the corresponding positions in the angle brackets.._[]
 
 .F[
-The usual automatic type converions take place as necessary – e.g. between
+The usual automatic type conversions take place as necessary – e.g. between
 arithmetic types.
 ]
   
@@ -1096,7 +1099,7 @@ systematic "find and replace":
   * From the perspective of the `RingBuffer`-s user it makes more sense to
     supply the net size `N` (number of elements that can actually be held).
 
-  * This can be easily achieved by replacing each occurence of `11` (in the
+  * This can be easily achieved by replacing each occurrence of `11` (in the
     original code) with `(N+1)` (in the template).
 
 .F[:
@@ -1225,21 +1228,8 @@ Using range-`for` to read or modifying all elements in a classic array …
 int data[100];
 … // fill with 100 values
 ```
-]
-.pull-right[
-```
-for (int e : data)
-    … // sequentially read
-      // values from data via e
-…
-for (int &v : data)
-    … // sequentially modify
-      // values from data via v
-```
-]
-.pull-left[
-… the code on the right side is equivalent to the code below, accessing all
-elements of data one after the other by index …
+… for sequential access to all elements the fragments below (left and right)
+are typical, either using an index …
 ```
 for (int i = 0; i < 100; ++i) {
     int e = data[i];
@@ -1253,9 +1243,18 @@ for (int i = 0; i < 100; ++i) {
 ```
 ]
 .pull-right[
+```
+for (int e : data)
+    … // sequentially read
+      // values from data via e
+…
+for (int &v : data)
+    … // sequentially modify
+      // values from data via v
+```
 … or – more C-style – via pointer:._[]
 ```
-for (int *p = data;
+for (const int *p = data;
     p < data+100; ++p)
     … // read data via *p
 …
@@ -1274,8 +1273,8 @@ other.
 template: plain
 header: ### Example: Range-For over STL-Vector
 
-One of the main advantages of range-`for` is its uniform syntax that applies to
-STL containers too (below left) instead of classic iterator loop (right):
+One of the main advantages of range-`for` is its uniform syntax applying to
+STL containers too (below left) instead of an iterator loop (right):
 .pull-left[
 ```
 std::vector<int> data;
@@ -1327,7 +1326,7 @@ template: plain
 header: ### Example: Range-For over STL-Map
 
 In case of an STL-Map the place-holder is in the range-`for` loop is a pair of
-the maps key value-type … which might seem inconvenient to specifiy …
+the maps key value-type … which might seem inconvenient to specify …
 ```
 std::map<std::string, int> data:
 … // fill with key-value pairs
@@ -1340,16 +1339,16 @@ for (std::pair<std::string, int> e : data)
 ```
 for (const auto &e : data)
     … // access key via e.first
-      // and associated data
-      // read-only via e.second
+      // associated READ-ONLY
+      // data via e.second
 ```
 ]
 .pull-right[
 ```
 for (auto &e : data)
     … // access key via e.first
-      // and associated data
-      // modifiable via e.second
+      // associated MODIFIABLE
+      // data via e.second
 ```
 Note that the key is always non-modifiable!
 ]
@@ -1532,13 +1531,13 @@ T2 filter(T1 beg, T1 end, T2 to, T3 pred) {
 }
 ```
 
-.I[
+.N[
 No general rule or guideline can be given which solution to prefer over the
 other, as this depends on various factors.
 ]
 
 .F[:
-Whether the actual predicate evaluation will be inlined also depends on other
+Whether the actual predicate evaluation will be inline-d also depends on other
 factors, like its definition is visible (and maybe explicitly made `inline`),
 or whether it is a classic function for which at the call site only an `extern`
 declaration is known. Also note that different compilers may vary in handling
@@ -1647,7 +1646,7 @@ filter(data.begin(), data.end(), std::back_inserter(result),
 ```
 
 .W[
-This will not compile because the lambda not matches the expectation
+This will not compile because the lambda does not match the expectation
 `filter` has about the use of its fourth argument.._[]
 ]
 
@@ -1667,7 +1666,7 @@ header: #### Lambda 101 – Capture Lists (Example)
 
 In a capture list variables from the local context may be named.
 
-Then in the code generated for the lambda that argument is transfered via a
+Then in the code generated for the lambda that argument is transferred via a
 special path:._[]
 ```
 double max;
@@ -1792,9 +1791,9 @@ template: plain
 name: boost_lambda_details
 header: #### Boost: Lambda Details
 
-While C++11 lambdas now provide a much more general and flexible solution, it
-can be argued that Boost lambdas are less blatant and in many cases of
-practical relevance can be create with much fewer key strokes.._[]
+While C++11 lambdas offer a more general and flexible solution, it can be
+argued that Boost lambdas are less blatant and – in many cases of practical
+relevance – require fewer key presses …._[]
 
 .F[:
 Whether or not this is considered to be an issue to guide a decision pro or
@@ -1903,7 +1902,7 @@ header: ### Exception Basics
 
 -------------------------------------------------------------------------------
 
-* [Understandig Exception Classes as Labels	](#exception_as_label)
+* [Understanding Exception Classes as Labels	](#exception_as_label)
 * [Grouping Related Exceptions 			](#exception_grouping)
 * [Activating Re-Entry Points			](#exception_try_block)
 
@@ -2117,7 +2116,7 @@ int main() {
 template: linkinfo
 graphic: ExceptionDetails
 name: exception_guidelines
-header: ## Guidelines for Using Exceptions
+header: ### Guidelines for Using Exceptions
 
 -------------------------------------------------------------------------------
 
@@ -2142,7 +2141,7 @@ template: withinfo
 graphic: ExceptionDetails
 section: (No) Disconnected Class Hierarchy
 name: disconnected_class_hierarchy
-header: ### Disconnected Class Hierarchy
+header: #### Disconnected Class Hierarchy
 
 For exceptions classes from a disconnected class hierarchy there is **no**
 possibility for catching these exceptions in generic code:
@@ -2171,7 +2170,7 @@ template: withinfo
 graphic: ExceptionDetails
 section: (Bad) Order of Handlers
 name: wrong_catch_order
-header: ### (Falsche) Behandlungsblock-Abfolge
+header: #### (Wrong Order of) `catch`-blocks
 
 With a wrong order of `catch`-blocks
 
@@ -2184,7 +2183,7 @@ template: withinfo
 graphic: ExceptionDetails
 section: Sub-optimal Re-throwing
 name: problematic_rethrow
-header: ### Problematic Re-Throwing
+header: #### Problematic Re-Throwing
 
 Rethrowing an exception is sub-optimal if the original thrown object needs to be
 copied.
@@ -2209,7 +2208,7 @@ section: Optimal Re-Throwing
 name: correct_rethrow
 header: #### Optimal Re-Throwing
 
-If the scheme shown below is applied, the originally received exeption object
+If the scheme shown below is applied, the originally received exception object
 will be re-thrown without making any copy (and hence also no slicing):
 ```
 try {
@@ -2276,7 +2275,7 @@ template: withinfo
 graphic: ExceptionDetails
 section: (No) Throwing from Destructors
 name: dtor_exception_nogo
-header: ### No Exceptions from Destructors
+header: #### No Exceptions from Destructors
 
 .W[
 Exceptions thrown from destructors **will cause program termination** if the
@@ -2307,7 +2306,7 @@ is **not** run as part of some exception handling.
 ---
 template: plain
 name: cpp11_noexcept
-header: ### C++98 `throw`-specifications Deprecated
+header: #### C++98 `throw`-specifications Deprecated
 
 Most guidelines from C++ experts recommend **not to use** `throw`-specifications
 as introduced with C++98.
@@ -2351,7 +2350,7 @@ to the caller's context!
 ---
 template: plain
 name: noexcept
-header: #### Conditional Freedom from Exceptions
+header: ##### Conditional Freedom from Exceptions
 
 Besides what was explained on the previous page `noexcept` is also a
 compile-time function which especially in templates is useful to
@@ -2370,7 +2369,7 @@ compile-time function which especially in templates is useful to
 ---
 template: plain
 name: noexcept_examples
-header: #### Examples for `noexcept`
+header: ##### Examples for `noexcept`
 
 Some easy calculation – exceptions are completely excluded:
 ```
@@ -2379,7 +2378,7 @@ float fahrenheit_to_centigrade(float temperature) noexcept {
 }
 ```
 
-Some vital functionality – no chance to revover, better crash completely:
+Some vital functionality – no chance to recover, better crash completely:
 ```
 extern void may_fail_catastrophically(int = 42) noexcept;
 ```
@@ -2429,7 +2428,7 @@ the failure.
 ---
 template: plain
 name: stl_quickly_and_some_boost
-header: ## STL
+header: ## STL Quickly (and some more of Boost)
 
 ---------------------------------------------------------------------------
 
@@ -2585,7 +2584,7 @@ The main difference between tree- and hash-based containers is:
 
 * Lookup of keys (elements) with O(log<sub>2</sub>(N)) vs. O(1) performance.
 
-* Requirement of **less-than**-comparision vs. **equal-to**-comparison and
+* Requirement of **less-than**-comparison vs. **equal-to**-comparison and
 hash-function.._[]
 
 .F[:
@@ -2788,18 +2787,12 @@ header: ### C++11: New Containers
 The following were introduced with C++11:
 
 * [`std::array`] – a wrapper around native arrays
-
 * [`std::forward_list`] – a singly linked list
-
 * [`std::unordered_set`] – the hash-based version of [`std::set`]
-
-* [`std::unordered_multiset`] – the hash-based version of [`std::multiset`]
-
+* [`std::unordered_multiset`] – as before for [`std::multiset`]
 * [`std::unordered_map`] – the hash-based version of [`std::map`]
-
-* [`std::unordered_multimap`] – the hash-based version of [`std::multimap`]
-
-* [`std::bitset`] is not a new container._[] but has been slightly extended.
+* [`std::unordered_multimap`] – as before for [`std::multimap`]
+* [`std::bitset`] – not a new container._[] but slightly extended.
 
 The iterator interface of all existing containers has been extended with the
 member functions `cbegin()`, `cend()`, `crbegin()`, and `crend()` to obtain
@@ -2917,13 +2910,13 @@ If a C++ implementation does not (yet) make hash-based containers available
 
 .N[
 The most important difference is that the standard containers are in namespace
-`std` while their Boost couterparts are in namespace `boost`.
+`std` while their Boost counterparts are in namespace `boost`.
 ]
 
 ---
 template: plain
 name: boost_bimap
-header: #### Boost: BiMap
+header: #### Boost: Bimap
 
 [Boost.Bimap]: http://www.boost.org/doc/libs/release/libs/bimap/doc/html/index.html
 
@@ -3140,7 +3133,7 @@ std::vector<int> data;
 const auto n = std::accumulate(data.begin(), data.end(), 0);
 ```
 
-This may seem as a minor inconvenience but easily allows for subranges without
+This may seem as a minor inconvenience but easily allows for sub-ranges without
 the need for specialized algorithms:
 ```
 assert(data.size() > 3);
@@ -3228,8 +3221,8 @@ With native pointers used as iterators, all of the STL algorithms can also be
 used to process native arrays.
 
 .N[
-There is price to pay: any algorithm that logically removes values cannot make
-the array smaller – so it returns the new end.
+There is price to pay: any algorithm that logically removes values can **not**
+make the array smaller – so it just returns the new end.
 ]
 
 ```
@@ -3466,7 +3459,7 @@ arguments when just a single container is involved.._[]
 
 .F[:
 Because the two arguments style adopted by the original STL has the advantage
-that subranges do not require additional algorithms, ranges from this library
+that sub-ranges do not require additional algorithms, ranges from this library
 can of course not only be constructed from containers (taking `begin()` and
 `end()` as range) but also from two container iterators!
 ]
@@ -3575,7 +3568,6 @@ in a compilation error.
 
 ---
 template: plain
-name: cpp11_bind_example2
 header: #### Binding Member Functions
 
 It is also possible to use `std::bind` for objects and their members – shown
@@ -3975,9 +3967,7 @@ extra space.
 The internal representation frequently is via three pointers:
 
 * The address of the first contained character.
-
 * The address of the last (valid) character.
-
 * The address to mark the end of allocated memory (usually one character beyond)
 
 Also on 64-bit architectures (and for strings of 8-bit wide characters)
@@ -3990,7 +3980,7 @@ where `'\0'` ends the string).
 ]
 
 .F[:
-The C++98 standard left it to the library implementors whether to chose
+The C++98 standard left it to the library implementers whether to chose
 contiguous or non-contiguous storage, though that freedom is – at least in
 effect – removed in C++11.
 ]
@@ -4002,8 +3992,8 @@ section: C-Compatibility
 name: stdstring_cstr_use
 header: ##### Using `std::string` as `const char *`
 
-A C-API expecting a C-style string – for example as name of a file – needs
-an address (of the first character) and `'\0'` termination (to mark the end).
+A C-API expecting a C-style string – e.g. as name of a file – needs
+an address (of the first character) and `'\0'`-termination (marking the end).
 
 The necessary adaption is done by the `c_str()` member function:
 ```
@@ -4019,14 +4009,12 @@ The above code is **correct and bears no risk**, as the pointer returned by
 `c_str()` (or the memory reachable via it)
 
 * is accessed only **inside** `std::fopen`, this
-
 * does not modify the variable `filename`, and
-
 * therefore any possible heap allocation will not change.
 
 .F[:
 If the mode to open the file came from an `std::string` too, of course it needs
-to be converted similarily like that:
+to be converted similarly like that:
 `… std::fopen( … , openmode.c_str()) …`
 ]
 
@@ -4046,7 +4034,7 @@ operation of the underlying string object.
 std::string s("see me, ");
 const char *p = s.c_str();
 s += std::string("feel me,");
-… // gets s further modified here?
+… // s further modified here?
 s.append(" touch me, hear me");
 ```
 ]
@@ -4169,7 +4157,7 @@ Most of these are intuitive, like
 
 * Assignment with `=`,
 
-* Comparision with `==`, `!=` etc.
+* Comparison with `==`, `!=` etc.
 
 * Concatenation with `+` and
 
@@ -4416,7 +4404,7 @@ section: Input and Output
 name: stdstring_in_word
 header: ##### Reading with `operator>>`
 
-[White Space]: http://de.wikipedia.org/wiki/Leerraum
+[White Space]: http://en.wikipedia.org/wiki/White_space
 
 The overloaded `operator>>` for `std::string`-s reads words by word:
 ```
@@ -4845,7 +4833,7 @@ template: plain
 name: regex_examples_access
 header: ##### Matching vs. Searching
 
-If in an regular expression there is only a single sub-pattern of interest
+If a regular expression has only a single sub-pattern of interest,
 instead of `std::regex_match` using `std::regex_find` should be considered:
 
 Assuming an `std::string input` the following
@@ -5063,9 +5051,9 @@ header: #### I/O-Stream Front-End
 
 The I/O-Stream Front-End consists of
 
-* the base class `std::ios`._[] with some common defintions
+* the base class `std::ios`._[] with some common definitions
 
-* derived from it classes `std::istream` und `std::ostream` which are typically
+* derived from it classes `std::istream` and `std::ostream` which are typically
   used as reference arguments to parametrise I/O-streams for functions called,
 
 * and the following classes meant to be instantiated:
@@ -5205,6 +5193,7 @@ Each stream has a number of state bits.
       are no more characters available);
     * or assumes the *BAD* state by setting `ios::std::failbit` (if further
       reading makes no sense because of some kind of hardware error);
+
 * otherwise (if some valid character(s) have already been extracted)
   * further processing of characters will be stopped
   * but the stream will stay in the *GOOD* state.
@@ -5317,7 +5306,7 @@ Note that there are other ways to "extract" input from a stream.
      * return indicates success of end-of-file
 * For character sequences:
   * some variants of `read` (member function) and
-  * `getline` (member function / gobal function)
+  * `getline` (member function / global function)
 
 .I[
 For more information see:
@@ -5352,7 +5341,7 @@ template: plain
 name: formatted_input_example
 header: ##### Formatted Input Example
 
-The following extracs floating point values from standard input:
+The following extracts floating point values from standard input:
 
 .pull-left[
 ```
@@ -5474,7 +5463,7 @@ header: ##### Formatted Output Example
 int main() {
    … // shown earlier
    std::cout.setf(std::ios::fixed);
-   std::cout.precission(4);
+   std::cout.precision(4);
    std::cout << "Average:"
    std::cout << std::setw(10) << sum/count;
    std::cout << std::endl;
@@ -5491,7 +5480,7 @@ Average:   16.6667
 ```
 ]
 .pull-right[
-The numeric value will always have **fixpoint** format showing
+The numeric value will always have **fixed-point** format showing
 **4 decimal** places, right-justified in a **10 character wide** printing
 zone.._[] (If it does not fit within that width the printing zone will be
 automatically extended.)
@@ -5531,6 +5520,163 @@ http://en.cppreference.com/w/cpp/io/basic_ostream/operator_ltlt
 Of course, by using a template the above can be generalized to work on
 streams based on any character-type.
 ]
+
+---
+template: plain
+name: boost_format
+header: ### Boost Format
+
+[Boost Format]: http://www.boost.org/doc/libs/release/libs/format/doc/format.html
+
+[Boost Format] brings back C-Style formatting to C++, but in a more type-safe
+way as traditional variadic functions can provide.
+
+The [formatted output example](#formatted_output_example) shown earlier,
+implemented with the traditional C++ formatting capabilities, can be rewritten
+as follows:
+
+```
+#include <iostream>
+#include <boost/format.hpp>
+namespace bf = boost.format;
+
+int main() {
+   … // shown earlier
+   std::cout << bf::format("Average: %10.4f") % (sum/count);
+   std::cout << std::endl;
+}
+```
+
+.I[
+There are many more options best described in the full online documentation
+(linked below), though glancing over the
+[Examples Section](http://www.boost.org/doc/libs/release/libs/format/doc/format.html#examples)
+contained already gives a good overview.
+http://www.boost.org/doc/libs/release/libs/format/doc/format.html
+]
+
+---
+template: plain
+name: boost_iostreams
+header: ### Boost: Iostreams
+
+[Boost.Iostream]: http://www.boost.org/doc/libs/release/libs/iostreams/doc/index.html
+
+[Boost.Iostream] is particularly helpful to implement
+
+* specialized stream buffers for input and output as reusable components
+
+* which may be dynamically configured depending on what is needed.
+
+.N[
+To some degree the approach is similar to pipelining some input for or output
+of an application through standard programs.
+]
+
+The only difference is that everything happens internally, but the idea of
+combining small modules of which
+
+* each *does a single, simple thing* well
+
+is exactly the same.._[]
+
+.F[:
+If all what has to be done can be expressed with input and output modules only,
+Boost.Iostream even contains a small helper that can replace a main program,
+feeding the input from one stream as output to the other one.
+]
+
+---
+template: plain
+name: boost_iostreams_preprocessing
+header: #### Input Preprocessing
+
+As an example may serve an idea for components which help to parse Unix-style
+configuration files.._[]
+
+.F[:
+Configuration file syntax in Unix was (and still is in Linux) often "ad hoc"
+but some common style has emerged over time: (1) empty line are not
+significant, (2) comments can be embedded in lines starting with a hash-sign
+('#'), and (3) long lines maybe broken into parts by ending lines that continue
+with a backslash ('\').
+]
+
+There could be
+
+* one module to strip empty lines and comments and
+
+* another module to join continuation lines,
+
+both of which are near to trivial and hence easy to develop and test.
+
+* An independent example were a module to recognizes and appropriately
+  replace XML character encodings (like '`&`*`xx`*`;`').
+
+.N[
+In any case, from the viewpoint of the actual application just plain text is
+read from an input stream.
+]
+
+---
+template: plain
+name: boost_iostreams_postprocessing
+header: #### Output Postprocessing
+
+As examples may serve components caring for some normalization in a
+postprocessing step, that may be dynamically configured from a library with
+reusable components.
+
+* Recognize and appropriately replace non-ASCII characters with the equivalent
+  XML encoding (i.e. '&*xx*;').._[]
+
+* Format simple plain text by breaking long lines at white space if a certain
+  line length would otherwise be exceeded.
+
+* As before but automatically insert a line continuation convention (like
+  ending lines to be continue with a backslash).
+
+* Prefix each line with its line number.
+
+.F[:
+As the mechanism is generic to stream buffers such modules may also be applied
+in a way that the output is received as character string, so that – with the
+same module – only plain text parts of a web page could be sanitized by
+replacing '`<`' with '`&lt;`' etc. but not for the actual HTML tags.
+]
+
+.N[
+In any case, from the viewpoint of the actual application just plain text is
+written to an output stream.
+]
+
+---
+template: plain
+name: boost_serialization
+header: ### Boost: Serialization
+
+[Boost.Serialization]: http://www.boost.org/doc/libs/release/libs/serialization/doc/index.html
+
+With [Boost.Serialization] object instances may be saved to persistent storage
+at some point to be restored later.
+
+.N[
+This includes instances referring to each other via pointers or references:  
+The mechanism takes care for "duplicates" if in a network of objects a
+particular instance is reachable via more than one path.
+]
+
+The obvious applications are:
+
+* Save the last state to continue the next run of an application where the
+  previous left off.
+
+* Checkpoint an application to provide a roll-back facility via the snapshots
+  taken, or reconstruct history.
+
+The degree to which this can work non-intrusive is limited, especially compared
+to other languages with much richer support for introspection.
+
 ---
 template: plain
 name: random_numbers
@@ -5655,13 +5801,13 @@ header: ### Boost: Random
 
 [Boost.Random]: http://www.boost.org/doc/libs/release/doc/html/chrono.html
 
-[Boost.Random] implements the C++11 conformant [Random classes](#cpp11_random)
+[Boost.Random] implements the C++11 conforming [Random classes](#cpp11_random)
 with some additions. 
 
 
 ---
 template: plain
-name: cpp11_chrono)
+name: cpp11_durations_and_clocks
 header: ## Durations and Clocks
 
 ---------------------------------------------------------------------------
@@ -5923,7 +6069,7 @@ header: ### Boost: Chrono
 
 [Boost.Chrono]: http://www.boost.org/doc/libs/release/doc/html/chrono.html
 
-[Boost.Chrono] implements the C++11 conformant [Chrono classes](#cpp11_chrono)
+[Boost.Chrono] implements the C++11 conforming [Chrono classes](#cpp11_chrono)
 with some additions. 
 
 Such target the area of measuring CPU-time, i.e.
@@ -5965,7 +6111,7 @@ now available on the Boost platform too.
 
 ---
 template: plain
-name: wednesday4
+name: cpp11_multithreading
 header: ## Multi-Threading
 
 ---------------------------------------------------------------------------
@@ -6721,7 +6867,7 @@ At this point **the mutex is locked** (again) and **the condition is true.**
 ---
 template: plain
 name: spurious_wakeups
-header: #### Spurious Wakeups
+header: #### Spurious Wake-Ups
 
 In the example code before, the loop (in the equivalent of `wait`-ing) may seem
 unnecessary, as the respective notification will be sent only after some action
@@ -7074,7 +7220,7 @@ template: plain
 name: cpp11_tuple
 header: ### C++11: Tuple
 
-Tuples are kind of ad-hoc structures and are mainly used to temporarily combine
+Tuples are kind of ad hoc structures and are mainly used to temporarily combine
 several unrelated values to be handled as unit, e.g. in a function result.
 
 The similarity of `std::tuple` to `std::pair` for the above use case is obvious
@@ -7445,7 +7591,7 @@ Missing type cases now might not have the required implementation.
 ]
 ---
 template: plain
-name: thursday2
+name: cpp11_smart_pointers
 header: ## C++11 Smart Pointers
 
 ---------------------------------------------------------------------------
@@ -7558,6 +7704,57 @@ Furthermore `p.get()` returns the address of the pointee (or `nullptr`), so
 * at least as long as the recipient is short-lived (compared to `p`) and
 
 * **does not assume ownership**.
+
+---
+template: plain
+name: shared_from_this
+header: #### Shared From `this` (Problem)
+
+The same problem arises slightly disguised if an object already managed by a
+shared pointer needs "to return itself":
+```
+class MyClass {
+    // ...
+    MyClass* myself() { return this; }
+};
+```
+.W[
+If the address returned by `MyClass::myself` were used to initialize an
+`std::shared_ptr<MySelf>`, the constructor would create a **new** reference
+counter initialized to `1`.
+]
+
+---
+template: plain
+name: enable_shared_from_this
+header: #### Shared From `this` (Solution)
+
+This is the
+[recipe to follow](http://en.cppreference.com/w/cpp/memory/enable_shared_from_this):
+```
+class MyClass : public std::enable_shared_from_this<MyClass> {
+    // ...
+	std::shared_ptr<MyClass> myself() { return shared_from_this(); }
+};
+```
+
+A typical scenario for this is when an object managed by a shared pointer
+needs to register a member function bound to itself as call-back, so that it
+can be invoked later: 
+
+```
+class MyClass : std::enable_shared_from_this<MyClass> {
+    std::future<void> f;
+    void action() {
+        auto me = shared_from_this();
+        f = std::async([me] { …; me->other(); …; });
+    }
+    void other(); // might also be an extension point (i.e. virtual)
+};
+…
+auto p = std::make_shared<MyClass>(); p->action();
+// `p` may or may not go out of scope before `MyClass::other` runs
+```
 
 ---
 template: plain
@@ -7843,7 +8040,7 @@ in Boost:
 ---
 template: plain
 name: boost_scoped_pointer
-header: ## Boost: Scoped Pointer
+header: #### Boost: Scoped Pointer
 
 [Scoped Pointer]: http://www.boost.org/doc/libs/release/libs/smart_ptr/scoped_ptr.htm
 
@@ -7869,7 +8066,7 @@ undefined behaviour will result at deletion time.
 ---
 template: plain
 name: boost_scoped_array
-header: ## Boost: Scoped Array
+header: #### Boost: Scoped Array
 
 [Scoped Array]: http://www.boost.org/doc/libs/release/libs/smart_ptr/scoped_array.htm
 
@@ -7896,7 +8093,7 @@ undefined behaviour will result at deletion time.
 ---
 template: plain
 name: boost_intrusive_pointer
-header: ## Boost: Intrusive Pointer
+header: #### Boost: Intrusive Pointer
 
 [Intrusive Pointer]: http://www.boost.org/doc/libs/release/libs/smart_ptr/intrusive_ptr.html
 
@@ -7904,7 +8101,7 @@ An [Intrusive Pointer] is much like a reference counted `boost::shared_ptr` or
 `std::shared_ptr`.
 
 * Instead of allocating reference counts separately it expects two global
-  functions overladed for pointers to the pointee's type:
+  functions overloaded for pointers to the pointee's type:
 
   * `intrusive_ptr_add_ref` – called when a new referrer for the pointee is
     added.
@@ -7928,7 +8125,7 @@ be modified.
 ---
 template: plain
 name: intrusive_pointer_example
-header: ### Intrusive Pointer Example
+header: ##### Intrusive Pointer Example
 
 To make `MyClass` usable with intrusive pointers it can be written as:._[]
 ```
@@ -7961,7 +8158,7 @@ The second template argument may be omitted as it defaults to
 ---
 template: plain
 name: boost_pointer_container
-header: ## Boost: Pointer Container
+header: ### Boost: Pointer Container
 
 A number of [Pointer Containers] has been made available by boost, paralleling
 the STL containers with a pointer version that
@@ -7973,10 +8170,10 @@ the STL containers with a pointer version that
 * considers its elements as pointers owning the memory pointed to.
 
 While the former two are more a matter of convenience (see example on next
-slide), the last one has a severe semantical implication:
+slide), the last one has a severe semantic implication:
 
 * If the container goes out of scope it deletes all the pointees of its (still)
-  contained elements.._[]
+  contained element pointers.._[]
 
 .F[:
 This effect can alternatively be achieved by storing `std::unique_ptr`-s in an
@@ -7992,7 +8189,7 @@ container goes out of scope.
 ---
 template: plain
 name: pointer_container_example
-header: ### Pointer Container Example
+header: #### Pointer Container Example
 
 Storing and later on processing a `boost::ptr_vector`:._[]
 ```
@@ -8026,7 +8223,7 @@ themselves.
 ---
 template: plain
 name: pointer_container_substitute
-header: ### Pointer Container Substitute
+header: #### Pointer Container Substitute
 
 Storing and later on processing a container of custodial pointers:._[]
 ```
@@ -8059,7 +8256,7 @@ pointees, avoiding a memory leak.
 ---
 template: plain
 name: garbage_collection
-header: ## Garbage Collection
+header: ### Garbage Collection
 
 There is no garbage collection in C++ because of a specific difficulty:
 
@@ -8206,7 +8403,34 @@ The [Boost.Signal] Library is an implementation of a managed signals and slots
 system. Signals represent callbacks with multiple targets, and are also called
 publishers or events in similar systems. Signals are connected to some set of
 slots, which are callback receivers (also called event targets or subscribers),
-which are called when the signal is "emitted."
+which are called when the signal is "emitted."._[]
+]
+
+.F[:
+Note that the Boost implementations has a lot of features that may or may not
+be used in an actual application.  If only flexibly coupling at run-time is the
+goal, even **without** Boost the code below may already suffice. (Of course, a
+return value and arguments as necessary may be added to the `std::function`
+definition.)
+
+```
+// shared table of connections between publisher and subscriber
+std::vector<std::function<void()>> c;
+```
+
+.pull-left[
+```
+// publisher signals all:
+for (auto &f : c) f();
+```
+]
+.pull-right[
+```
+// subscriber appends call-back:
+c.emplace_back([](){ …whatever… });
+```
+]
+
 ]
 
 ---
@@ -8239,13 +8463,13 @@ Boost.Interprocess works with both, [Threads or Processes].
 
 [Threads or Processes]: http://www.boost.org/doc/libs/release/doc/html/interprocess/some_basic_explanations.html#interprocess.some_basic_explanations.processes_and_threads
 
-Which of both is chosen mainly depends on design criterias:
+Which of both is chosen mainly depends on design criteria:
 
 * Threads operate in the same address space and hence (e.g.)
   * can share data easily via global variables, and
   * are usually a bit more "light-weight"
     * (somewhat) faster to create
-    * less ressource consuming
+    * less resource consuming
 * Processes are strictly shielded from each, so they
   * need to be more explicit to share common data.
 
@@ -8257,7 +8481,7 @@ sometime called "accidental sharing"._[]
 .F[:
 I.e. sometimes more explicit copying may be necessary when processes are used
 but there are usually also fewer hard to chase bugs, manifesting themselves in
-data inconsitencies last and finally caused by race conditions missed by the
+data inconsistencies last and finally caused by race conditions missed by the
 developer.
 ]
 
@@ -8266,14 +8490,14 @@ template: plain
 name: shared_memory
 header: #### Shared Memory
 
-[Shared Memory] is a very fast mechanism to exchange,
+Shared Memory is a very fast mechanism to exchange data,
 
 * as well between two process
-  – which then **may have** common memory mapped to different addresses
+  – which then **may have** common memory mapped to different addresses,
 
-* and also between two threads
+* but also between two threads
   – which thereby can avoid global variables and hence have more privacy
-  in relation to each other
+  in relation to each other.
 
 Typically shared memory needs to be combined with a synchronisation mechanism
 to avoid race conditions when data is modified or a non-busy waiting feature.
@@ -8320,8 +8544,8 @@ header: ##### Creating and Attaching Combined
 
 Creating and attaching to shared memory **`shm_obj`** can also be combined:
 ```
-boost::interprocess::shared_memory_object shm_obj{
-    open_or_create               //open or create
+boost::interprocess::shared_memory_object shm_obj
+   {open_or_create               //open or create
    ,"shared_memory"              //name
    ,read_only                    //read-only mode
    };
@@ -8329,7 +8553,7 @@ boost::interprocess::shared_memory_object shm_obj{
 
 ---
 template: plain
-header: ##### Retrieving Adress and Size
+header: ##### Retrieving Address and Size
 
 Once a shared memory object **`shm_obj`** is created or opened, its address (and
 also its size) needs to be determined. This can also be done only for a smaller
@@ -8359,7 +8583,7 @@ template: plain
 header: ##### Returning Shared Memory
 
 To avoid exhaustion of resources, shared memory not any longer in use needs to
-be (explicitely) returned.
+be (explicitly) returned.
 
 Most elegantly this can be done following the RAII idiom, wrapping the static
 `…::remove` in the destructor of a helper type:
@@ -8393,7 +8617,7 @@ template: plain
 header: ##### Anonymous Shared Memory
 
 While the shared memory in the previous examples had a name by which it was
-indentified, also anonymous shared memory is supported:._[]
+identified, also anonymous shared memory is supported:._[]
 ```
     …
     //Create an anonymous shared memory segment with size 1000
@@ -8469,7 +8693,7 @@ Therefore
 .N.center[
 [
 Click here for some example codes from the Boost Documentation.
-](http://www.boost.org/doc/libs/cwrelease1_63_0/doc/html/interprocess/managed_memory_segments.html#interprocess.managed_memory_segments.managed_memory_segment_features.allocation_types)
+](http://www.boost.org/doc/libs/release/doc/html/interprocess/managed_memory_segments.html#interprocess.managed_memory_segments.managed_memory_segment_features.allocation_types)
 ]
 
 ---
@@ -8541,7 +8765,7 @@ name: various_synchronization
 header: #### Various Synchronization Mechanisms
 
 * Supported are:
-  * [Semaphores](#boost_ipc_semapores) both,
+  * [Semaphores](#boost_ipc_semaphores) both,
     * [in a named variant](#boost_ipc_named_semaphores)
     * [and a unnamed one](#boost_ipc_unnamed_semaphores)
   * [Ordinary Mutexes](#boost_ipc_ordinary_mutexes)
@@ -8575,7 +8799,7 @@ Basically Semaphores are
 Essential to understand this as **Synchronization Mechanism** is that
 
 * the *current value* of a semaphore reflects
-  * "the number or resources availabe"
+  * "the number or resources available"
 * *waiting* for a semaphore means to
   * either "take away one resource" (if any is still available)
   * or "patiently stand in line" (until one becomes available)
@@ -8659,7 +8883,7 @@ header: #### Basics of Mutexes
 The word *Mutex* is an artificial construct that can be understood as the
 contraction of the two words "mutual execution".
 
-Mutexes are quite similar to [Semaphores](#boost_ipc_semapores) but have act –
+Mutexes are quite similar to [Semaphores](#boost_ipc_semaphores) but have act –
 less general that semaphores – in a "boolean" way:
 
 * A mutex represents a resource
@@ -8721,7 +8945,7 @@ template: plain
 name: boost_ipc_upgradable_mutexes
 header: ##### Sharable vs. Upgradable Mutexes
 
-Via *Sharable* and *Upgradable* Mutextes *Multiple Readers/Single Writer*
+Via *Sharable* and *Upgradable* Mutexes *Multiple Readers/Single Writer*
 locking schemes can be implemented:
 
 * Any number of **Readers** may acquire a shared lock  
@@ -8754,7 +8978,7 @@ header: ##### Scoped Locks vs. Plain Mutexes
 
 While Plain Mutexes have
 
-* seperate `lock()`
+* separate `lock()`
 * and `unlock()`
 
 operations which must always be used symmetrically.
@@ -8924,8 +9148,8 @@ Or for a bounded buffer
 
 
 .F[:
-While this is usually no issue for simple data values, objects refering to each
-other via pointers valid only inthe same virtual address space need special
+While this is usually no issue for simple data values, objects referring to each
+other via pointers valid only in the same virtual address space need special
 attention. [Relative Pointers](#relative_pointers) (as covered later) combined
 with [Shared Memory](#shared_memory) (as already covered) may help to solve
 this … though sometimes at the price of different challenges.
@@ -8936,7 +9160,7 @@ template: plain
 name: message_queue_variations
 header: ##### Variations of Message Queues
 
-The datailed behaviour of a message queue can be selected from
+The detailed behaviour of a message queue can be selected from
 
 * when **Sending** or **Receiving** whether the operation
   * may block until it can be carried out,
@@ -8961,7 +9185,7 @@ To work with a message queue, a program first must create or attach to it:
 ```
 message_queue boost::interprocess::message_queue mq_obj{
    open_or_create      //open or create, alternatively
-   // open_only          do not create if non-existant
+   // open_only          do not create if non-existing
    // create_only        do not create if already exists
    ,MSGQ_NAME          //name
    ,MSG_NUM            //max message number
@@ -8975,7 +9199,7 @@ This much similar to other IPC mechanisms (like shared memory etc.).
 
 A message queue is kept alive as long as the system runs – **including any messages
 *sent* but not yet *received***. Its resources – and unread messages – may be
-explicitely released with a static member function:
+explicitly released with a static member function:
 ```
 boost::interprocess::message::remove(MSGQ_NAME);
 ```
@@ -9040,7 +9264,7 @@ Care is taken to create a valid `std::string` from a plain character buffer.._[]
 
 .F[:
 Note that the below code (obviously aiming to avoid copying)
-**techically has undefined behaviour**.
+**technically has undefined behaviour**.
 ```
 std::string get_greet() {
     std::string greet(MSG_SIZE);
@@ -9064,16 +9288,16 @@ If objects in shared memory reference each other, the following is crucial to
 understand:
 
 .N[
-Their virtual addresses – as stored in usual pointers – are not valid accross
+Their virtual addresses – as stored in usual pointers – are not valid across
 processes.
 ]
 
 The reason is that
 
-* the same region (of shared menory)
+* the same region (of shared memory)
 * may be mapped to different base address._[]
 
-[Relative Pointers] provide a solution at the expense of some adress arithmetic
+[Relative Pointers] provide a solution at the expense of some address arithmetic
 at run-time.
 
 .N[
@@ -9082,9 +9306,9 @@ Note that the solution is limited to one and the same stretch of shared memory
 ]
 
 .F[:
-For 64-bit hardware, due to its large adress range and the option to specifiy
-the desired address when existing shared memory is attached, the problem ist
-much relieved, though not reliably avoided.
+For 64-bit hardware, due to its large address range and the option to specify
+the desired address when existing shared memory is attached, the problem is
+much alleviated, though not reliably avoided.
 ]
 
 ---
@@ -9097,11 +9321,11 @@ header: #### File Locking
 [File Locking] is provided in an advisory style, i.e.
 
 * any file access **without** prior locking
-* **will definetely be granted**.
+* **will definitely be granted**.
 
 Therefore file locks may just be viewed as a file system specific mutex mechanism.
 
-Similar to mutexes there is an exclusiv and a shared version._[]
+Similar to mutexes there is an exclusive and a shared version._[]
 
 Furthermore "timed" and "try" versions and also RAII-style lock wrappers are
 available.
@@ -9113,7 +9337,7 @@ That way supporting so called "multiple reader / single writer" locking.
 ---
 template: plain
 name: file_locking
-header: ##### File Locking Example (Mutiple Readers)
+header: ##### File Locking Example (Multiple Readers)
 
 Using a sharable RAII-style lock to avoid a readers interfere with a writer:
 ```
@@ -9142,7 +9366,7 @@ template: plain
 name: file_locking
 header: ##### File Locking Example (Single Writer)
 
-Using an exclusive (non-sharable) RAII-style lock to avoid a writer interfers
+Using an exclusive (non-sharable) RAII-style lock to avoid a writer interferes
 with any reader or other writer:
 ```
 boost::interprocess::file_lock my_file_lock{"my_file"};
